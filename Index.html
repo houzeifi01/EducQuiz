@@ -1,0 +1,877 @@
+<!doctype html>
+
+<html lang="fr">  
+<head>  
+<meta charset="utf-8" />  
+<meta name="viewport" content="width=device-width,initial-scale=1" />  
+<title>EducQuiz (Culture Générale)</title>  
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">  
+<style>  
+  :root{  
+    --bg-1:#eaf6ff;  
+    --bg-2:#f7fbff;  
+    --card:#ffffff;  
+    --muted:#6b7280;  
+    --accent:#4b6ef6;  
+    --accent-2:#06b6d4;  
+    --success:#22c55e;  
+    --danger:#ef4444;  
+    --glass: rgba(255,255,255,0.96);  
+    --header-h:64px;  
+    --maxw:980px;  
+  }  
+  *{box-sizing:border-box}  
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;padding:0;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));-webkit-font-smoothing:antialiased;overflow:hidden;color:#042029}  
+  a{color:inherit}  
+  button{font-family:inherit}  
+  /* App shell */  
+  .app{width:100%;max-width:var(--maxw);margin:0 auto;height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden}  
+  header{height:var(--header-h);display:flex;align-items:center;justify-content:center;padding:10px 18px;position:relative;z-index:30}  
+  .logo-left{position:absolute;left:12px;display:flex;align-items:center;gap:10px}  
+  .logo-left .back{background:var(--card);padding:8px;border-radius:10px;border:1px solid rgba(4,32,41,0.06);display:flex;align-items:center;gap:8px;cursor:pointer}  
+  .center-title{font-weight:800;font-size:18px;text-align:center}  
+  .center-sub{font-weight:600;font-size:12px;color:var(--muted)}  
+  .header-right{position:absolute;right:12px;display:flex;gap:8px;align-items:center}  
+  .icon-btn{background:var(--card);padding:8px;border-radius:10px;border:1px solid rgba(4,32,41,0.06);cursor:pointer}  
+  .main{flex:1;display:flex;position:relative;overflow:hidden}  
+  .side-menu{position:absolute;left:0;top:0;bottom:0;width:280px;background:linear-gradient(180deg,#ffffff,#f3fbff);box-shadow:0 30px 80px rgba(2,6,23,0.08);transform:translateX(-110%);transition:transform .32s ease;z-index:40;padding:18px;border-right:1px solid rgba(4,32,41,0.04)}  
+  .side-menu.open{transform:translateX(0)}  
+  .side-menu h3{margin:0 0 12px 0}  
+  .side-menu button{width:100%;text-align:left;margin:6px 0;padding:10px;border-radius:10px;border:0;background:transparent;cursor:pointer}  
+  .content{flex:1;padding:18px;overflow:auto;height:calc(100vh - var(--header-h));scroll-behavior:smooth}  
+  .page{display:none;opacity:0;transform:translateY(8px);transition:opacity .22s,transform .22s}  
+  .page.active{display:block;opacity:1;transform:none}  
+  .bg-shapes{position:fixed;left:50%;top:20%;transform:translateX(-50%);width:1500px;height:900px;pointer-events:none;z-index:0;opacity:0.18}  
+  .shape{position:absolute;border-radius:999px;filter:blur(28px);opacity:0.9;mix-blend-mode:screen;animation:float 8s ease-in-out infinite;}  
+  .s1{width:420px;height:420px;background:linear-gradient(90deg,#7dd3fc,#60a5fa);left:0;top:40px;animation-duration:10s}  
+  .s2{width:300px;height:300px;background:linear-gradient(90deg,#a78bfa,#7c3aed);left:300px;top:140px;animation-duration:12s}  
+  .s3{width:260px;height:260px;background:linear-gradient(90deg,#34d399,#06b6d4);left:700px;top:20px;animation-duration:9s}  
+  @keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-18px)}100%{transform:translateY(0)}}  
+  .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 18px 48px rgba(2,6,23,0.06);position:relative;z-index:10}  
+  .hero{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px}  
+  .cta-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}  
+  .btn{padding:10px 14px;border-radius:12px;border:0;cursor:pointer;font-weight:700}  
+  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}  
+  .btn.ghost{background:transparent;border:1px solid rgba(4,32,41,0.05)}  
+  .small-muted{color:var(--muted);font-size:13px}  
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:12px}  
+  .cat{background:linear-gradient(180deg,#fff,#fbfdff);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;border:1px solid rgba(4,32,41,0.04);transition:transform .18s,box-shadow .18s}  
+  .cat:hover{transform:translateY(-6px);box-shadow:0 20px 46px rgba(2,6,23,0.06)}  
+  .cat .icon{font-size:28px}  
+  .cat h4{margin:0;font-weight:800;color:#042029}  
+  .cat p{margin:0;color:var(--muted);font-size:13px}  
+  .levels{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:12px}  
+  .level{width:130px;height:130px;border-radius:14px;background:linear-gradient(180deg,#fff,#fbfdff);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;border:1px solid rgba(4,32,41,0.03)}  
+  .level.locked{filter:grayscale(.2);opacity:.5;cursor:not-allowed}  
+  .quiz-top{display:flex;justify-content:space-between;align-items:center;gap:8px}  
+  .badge{padding:8px 12px;border-radius:12px;background:#fff;border:1px solid rgba(4,32,41,0.04);font-weight:800;color:#042029}  
+  .progress{height:10px;background:rgba(4,32,41,0.04);border-radius:999px;overflow:hidden;margin-top:10px}  
+  .progress > div{height:100%;width:0;background:linear-gradient(90deg,var(--accent-2),var(--accent));transition:width .35s}  
+  .question{font-weight:800;font-size:18px;margin-top:12px}  
+  .options{display:grid;gap:12px;margin-top:12px}  
+  .option{padding:12px;border-radius:10px;background:#fff;border:1px solid rgba(4,32,41,0.04);cursor:pointer;font-weight:700;text-align:left}  
+  .option.correct{background:linear-gradient(90deg,var(--success),#16a34a);color:#042029}  
+  .option.wrong{background:linear-gradient(90deg,var(--danger),#fb923c);color:white}  
+  /* Timer */  
+  .timer-badge{font-weight:900;padding:8px 12px;border-radius:999px;background:#fff;border:1px solid rgba(4,32,41,0.05);color:#b91c1c}  
+  .timer-pulse{animation: pulseTimer 800ms ease-in-out infinite;}  
+  @keyframes pulseTimer{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}  
+  /* responsive */  
+  @media(max-width:900px){  
+    .side-menu{width:240px}  
+    .bg-shapes{display:none}  
+  }  
+</style>  
+</head>  
+<body>  
+  <div class="app" id="app">  
+    <div class="bg-shapes" aria-hidden="true"><div class="shape s1"></div><div class="shape s2"></div><div class="shape s3"></div></div>  <header>  
+  <div class="logo-left">  
+    <div class="back" id="btnBack" title="Retour" aria-label="Retour" role="button">  
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="#042029" stroke-width="2" stroke-linecap="round"/></svg>  
+      <span style="font-weight:700;color:#042029;font-size:14px">Retour</span>  
+    </div>  
+  </div>  
+
+  <div style="text-align:center">  
+  <div class="center-title">
+  EducQuiz
+  <span class="center-sub">Culture Générale</span>
+</div>
+
+<!-- Style CSS -->
+<style>
+.center-title {
+  font-size: 2rem; /* Taille du texte */
+  font-weight: bold;
+  background: linear-gradient(90deg, #00c6ff, #7d2ae8); /* Dégradé bleu → violet */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+  text-align: center;
+  animation: float 3s ease-in-out infinite; /* Animation flottante */
+  margin-top: 20px;
+}
+
+.center-sub {
+  display: block;
+  font-size: 1.2rem;
+  color: #ddd;
+  margin-top: 5px;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+/* Animation flottante */
+@keyframes float {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+</style>
+
+  <div class="header-right ">  
+    <div class="icon-btn" id="btnMenu" aria-label="Menu" title="Menu">≡</div>  
+    <div class="icon-btn" id="btnSettings" aria-label="Paramètres" title="Paramètres">⚙️</div>  
+  </div>  
+</header>  
+
+<div class="main">  
+  <nav class="side-menu" id="sideMenu" aria-hidden="true">  
+    <h3>Menu</h3>  
+    <button id="mHome">🏠 Accueil</button>  
+    <button id="mCategories">📚 Catégories</button>  
+    <button id="mSettings">⚙️ Paramètres</button>  
+    <button id="mWithdraw">💸 Retrait</button>  
+    <button id="mReset">♻️ Réinitialiser</button>  
+    <div style="height:18px"></div>  
+    <div class="small-muted">Pseudo: <span id="userLabel">Joueur</span></div>  
+    <div class="small-muted">Gains: <span id="gainsLabel">0</span> $</div>  
+  </nav>  
+
+  <div class="content" id="content">  
+    <!-- AD / Home -->  
+    <section id="page-ad" class="page active">  
+      <div class="card hero">  
+<!-- Logo circulaire futuriste "EQ" -->
+<div class="eq-logo" role="img" aria-label="Logo EducQuiz EQ"><span>EQ</span></div>
+
+<style>
+:root{
+  --size: 120px;         /* change la taille globale du logo ici */
+  --inner: calc(var(--size) * 0.62);
+}
+
+/* Conteneur circulaire */
+.eq-logo{
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin: 18px auto;
+  position: relative;
+  background: radial-gradient(45% 45% at 30% 25%, rgba(255,255,255,0.06), transparent 30%),
+              linear-gradient(135deg, rgba(0,195,255,0.12), rgba(124,77,255,0.10) 40%, rgba(0,230,118,0.08));
+  overflow: visible;
+  transform-style: preserve-3d;
+  perspective: 800px;
+  animation: floatLogo 5s ease-in-out infinite;
+  cursor: default;
+}
+
+/* Neon ring (outer) */
+.eq-logo::before{
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: conic-gradient(from 120deg, rgba(0,195,255,0.28), rgba(124,77,255,0.28), rgba(0,230,118,0.28));
+  filter: blur(18px);
+  opacity: 0.9;
+  z-index: 0;
+  animation: spin 8s linear infinite;
+  pointer-events: none;
+}
+
+/* Inner glossy ring */
+.eq-logo::after{
+  content: "";
+  position: absolute;
+  width: calc(var(--size) - 18px);
+  height: calc(var(--size) - 18px);
+  border-radius: 50%;
+  z-index: 1;
+  background: radial-gradient(circle at 30% 25%, rgba(255,255,255,0.06), transparent 25%);
+  box-shadow: inset 0 6px 18px rgba(255,255,255,0.03);
+  pointer-events: none;
+}
+
+/* The letters */
+.eq-logo > span{
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  width: var(--inner);
+  height: var(--inner);
+  line-height: var(--inner);
+  text-align: center;
+  font-weight: 900;
+  font-family: "Poppins", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  font-size: calc(var(--size) * 0.42);
+  letter-spacing: 0.06em;
+  background: linear-gradient(90deg, #00c3ff, #7c4dff, #00e676);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow:
+    0 2px 8px rgba(0,0,0,0.6),
+    0 0 10px rgba(0,195,255,0.35),
+    0 0 22px rgba(124,77,255,0.28);
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.45));
+  transform: translateZ(40px);
+  transition: transform .28s ease, filter .28s ease;
+  user-select: none;
+}
+
+/* small inner halo for depth */
+.eq-logo .halo {
+  position: absolute;
+  width: 40%;
+  height: 40%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.12), transparent 40%);
+  z-index: 1;
+  top: 12%;
+  left: 12%;
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+/* Hover / focus interaction */
+.eq-logo:hover, .eq-logo:focus{
+  transform: translateY(-8px) rotateY(6deg) rotateX(3deg);
+}
+.eq-logo:hover > span{
+  transform: translateZ(56px) scale(1.06);
+  filter: drop-shadow(0 12px 30px rgba(0,195,255,0.45));
+}
+
+/* Animations */
+@keyframes floatLogo{
+  0%,100% { transform: translateY(0) rotateX(0deg); }
+  50%    { transform: translateY(-14px) rotateX(3deg); }
+}
+@keyframes spin{
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive: réduit automatiquement sur petits écrans */
+@media (max-width:420px){
+  :root{ --size: 86px; }
+  .eq-logo > span{ font-size: calc(var(--size) * 0.42); }
+}
+</style>
+<style>
+.floating {
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  background: linear-gradient(90deg, #00c3ff, #7c4dff, #00e676);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 300% 300%;
+  animation: gradientMove 6s ease infinite, float 3s ease-in-out infinite;
+  text-shadow:
+    0 0 6px rgba(0,195,255,0.7),
+    0 0 12px rgba(124,77,255,0.6),
+    0 0 20px rgba(0,230,118,0.5);
+}
+
+.subfloating {
+  text-align: center;
+  font-size: 16px;
+  color: #d0d0d0; /* sobre et pro */
+  text-shadow:
+    0 0 4px rgba(255,255,255,0.3),
+    0 0 8px rgba(200,200,200,0.2);
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+</style>
+
+<p class="floating">Défie ton esprit — deviens maître du savoir</p>
+<p class="subfloating">Attention! Ce quiz peut rendre ton cerveau accro à l'apprentissage</p>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apprentissage</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      color: #333;
+      text-align: center;
+      margin: 20px;      /* Réduit la marge (remonte la page) */
+    }
+
+    /* Style boutons */
+    button {
+      padding: 12px 40px; /* Boutons plus larges */
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 10px;
+      color: black;
+      font-size: 16px;   /* Texte un peu plus grand */
+    }
+
+    #startBtn {
+      background: #2196f3; /* Bleu */
+    }
+    #startBtn:hover {
+      background: #1976d2;
+    }
+
+    #howBtn {
+      background: #4caf50; /* Vert */
+    }
+    #howBtn:hover {
+      background: #388e3c;
+    }
+
+    /* Astuce */
+    .small-muted {
+      font-size: 15px;
+      color: #555;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="startBtn">Commencer</button>
+  <button id="howBtn">Comment ça marche</button>
+
+  <div class="small-muted">
+    Astuce : vise 9/10 pour débloquer le niveau suivant.
+  </div>
+  
+    </section>  
+
+    <!-- LOGIN -->  
+    <section id="page-login" class="page">  
+      <div class="card" style="max-width:720px;margin:0 auto">  
+        <h2>Connexion</h2>  
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">  
+          <input id="emailInput" type="Name" placeholder="Nom d'utilisateur" />  
+          <input id="pwdInput" type="password" placeholder="Mot de passe" />  
+          <input id="pwdInput2" type="password" placeholder="Confirmer mot de passe" />  
+          <div style="display:flex;gap:10px;justify-content:center">  
+            <button class="btn primary" id="btnAccess">Accéder</button>  
+            <button class="btn ghost" id="btnGuest">Invité</button>  
+          </div>  
+          <div class="small-muted" style="text-align:center">Les informations sont stockées localement sur ton appareil.</div>  
+        </div>  
+      </div>  
+    </section>  
+
+    <!-- CATEGORIES -->  
+    <section id="page-categories" class="page">  
+      <div style="display:flex;justify-content:space-between;align-items:center">  
+        <h2>Catégories</h2>  
+        <div class="small-muted">Choisis une catégorie</div>  
+      </div>  
+
+      <div class="grid">  
+        <div class="cat" data-cat="culture"><div class="icon">📘</div><h4>Culture Générale</h4><p>Questions variées & utiles</p></div>  
+        <div class="cat" data-cat="sport"><div class="icon">🏅</div><h4>Sport</h4><p>Règles, records, athlètes</p></div>  
+        <div class="cat" data-cat="sante"><div class="icon">🩺</div><h4>Santé & Hygiène</h4><p>Pratiques & connaissances</p></div>  
+        <div class="cat" data-cat="histoire"><div class="icon">🌍</div><h4>Histoire Africaine</h4><p>Figures et événements</p></div>  
+        <div class="cat" data-cat="tech"><div class="icon">💻</div><h4>Technologie</h4><p>Informatique & innovations</p></div>  
+      </div>  
+    </section>  
+
+    <!-- LEVELS -->  
+    <section id="page-levels" class="page">  
+      <div style="display:flex;justify-content:space-between;align-items:center">  
+        <div>  
+          <h2 id="levels-title">Catégorie</h2>  
+          <div class="small-muted">Choisis un niveau — débloqué par progression (≥ 9/10)</div>  
+        </div>  
+        <div class="meta-row"><div class="small-muted">Débloqués: <span id="unlockedCount">—</span>/5</div></div>  
+      </div>  
+
+      <div class="levels" id="levelsList"></div>  
+    </section>  
+
+    <!-- QUIZ -->  
+    <section id="page-quiz" class="page">  
+      <div class="card" style="max-width:820px;margin:0 auto">  
+        <div class="quiz-top">  
+          <div class="meta"><div class="badge" id="metaCat">Catégorie</div></div>  
+          <div class="meta"><div class="badge" id="metaLvl">-</div></div>  
+          <div class="meta"><div class="badge" id="metaScore">0</div></div>  
+          <div class="meta"><div id="timerBadge" class="timer-badge">30s</div></div>  
+        </div>  
+
+        <div class="progress"><div id="progressBar" style="width:0%"></div></div>  
+
+        <div class="question" id="questionText">Question ...</div>  
+
+        <div class="options" id="optionsArea"></div>  
+
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">  
+          <button class="btn ghost" id="btnSkip">⏭ Passer</button>  
+          <button class="btn ghost" id="btnNext" style="display:none">→ Suivant</button>  
+          <button class="btn ghost" id="btnQuit">Quitter</button>  
+        </div>  
+      </div>  
+    </section>  
+
+    <!-- RESULT -->  
+    <section id="page-result" class="page">  
+      <div class="card" style="max-width:640px;margin:0 auto;text-align:center">  
+        <div style="font-size:48px">🏆</div>  
+        <h2 id="result-title">Résultat</h2>  
+        <div style="font-weight:900;font-size:32px" id="resultScore">0 / 10</div>  
+        <div class="small-muted" id="resultMsg">Message</div>  
+        <div style="margin-top:12px;display:flex;gap:10px;justify-content:center">  
+          <button class="btn primary" id="btnReplay">Rejouer</button>  
+          <button class="btn ghost" id="btnChooseLevel">Choisir niveau</button>  
+          <button class="btn primary" id="btnNextLevel" style="display:none">Niveau suivant</button>  
+        </div>  
+        <div style="margin-top:12px" class="small-muted">Gains virtuels: <span id="virtGains">0</span>$</div>  
+      </div>  
+    </section>  
+
+    <!-- SETTINGS -->  
+    <section id="page-settings" class="page">  
+      <div class="card" style="max-width:720px;margin:0 auto">  
+        <h2>Paramètres</h2>  
+        <div class="settings-row" style="margin-top:12px">  
+          <div style="display:flex;flex-direction:column;gap:8px">  
+            <label>Son</label>  
+            <button class="btn ghost" id="toggleSound">Activer / Désactiver</button>  
+          </div>  
+          <div style="display:flex;flex-direction:column;gap:8px">  
+            <label>Thème</label>  
+            <select id="themeSelect" style="padding:8px;border-radius:8px">  
+              <option value="soft">Soft (par défaut)</option>  
+              <option value="dark">Sombre</option>  
+            </select>  
+          </div>  
+        </div>  
+      </div>  
+    </section>  
+
+    <!-- WITHDRAW -->  
+    <section id="page-withdraw" class="page">  
+      <div class="card" style="max-width:640px;margin:0 auto;text-align:center">  
+        <h2>Retrait (simulation)</h2>  
+        <p class="small-muted">Complétez tous les niveaux de toutes les catégories pour débloquer la demande de retrait (simulation — pas de paiement réel).</p>  
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">  
+          <button class="btn primary" id="requestWithdraw">Demander retrait</button>  
+          <button class="btn ghost" id="backToMenu">Retour</button>  
+        </div>  
+      </div>  
+    </section>  
+
+  </div>  
+</div>
+
+  </div>    <!-- Audio (light joyful success, gentle fail, click) -->  <audio id="soundClick" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
+<audio id="soundSuccess" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
+<audio id="soundFail" src="https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum.ogg" preload="auto"></audio>
+
+<script>  
+/* =========================  
+   CONFIG & STATE  
+   ========================= */  
+const LEVELS = ['Facile','Moyen','Difficile','Expert','Maitre'];  
+const QUESTIONS_PER_LEVEL = 10;  
+const STORAGE_KEY = 'cerveau_plus_v2';  
+const STORAGE_GAINS = 'cerveau_plus_gains_v2';  
+const STORAGE_SOUND = 'cerveau_plus_sound_v2';  
+let state = {  
+  user: localStorage.getItem('cp_user') || 'Joueur',  
+  email: localStorage.getItem('cp_email') || '',  
+  progress: JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {},  
+  virtualGains: Number(localStorage.getItem(STORAGE_GAINS) || 0),  
+  sound: localStorage.getItem(STORAGE_SOUND) !== '0',  
+  currentCategory: null,  
+  currentLevelIndex: 0,  
+  quiz: [],  
+  idx: 0,  
+  score: 0,  
+  timer: null,  
+  timeLeft: 30  
+};  
+  
+/* ensure progress */  
+function ensureProgress(){  
+  const cats = ['culture','sport','sante','histoire','tech'];  
+  if(!state.progress || typeof state.progress !== 'object') state.progress = {};  
+  cats.forEach(c=>{  
+    if(!Array.isArray(state.progress[c]) || state.progress[c].length !== LEVELS.length){  
+      state.progress[c] = LEVELS.map((_,i)=> i===0);  
+    }  
+  });  
+  saveProgress();  
+}  
+function saveProgress(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.progress)); }  
+function saveGains(){ localStorage.setItem(STORAGE_GAINS, String(state.virtualGains)); }  
+function saveAudioPref(){ localStorage.setItem(STORAGE_SOUND, state.sound ? '1' : '0'); }  
+function saveUser(){ localStorage.setItem('cp_user', state.user); localStorage.setItem('cp_email', state.email); }  
+ensureProgress();  
+  
+/* =========================  
+   QUESTIONS DB (curated 10 q per level per category)  
+   ========================= */  
+/* For brevity the DB is similar to previous large version but included fully */  
+const DB = {  
+  culture: {  
+    Facile:[{q:"Quelle est la capitale de la France ?",options:["Madrid","Paris","Rome","Berlin"],a:1},{q:"Combien font 2 + 2 ?",options:["3","4","5","6"],a:1},{q:"Quelle couleur a le ciel par temps clair ?",options:["Bleu","Vert","Rouge","Noir"],a:0},{q:"La Tour Eiffel se trouve dans quel pays ?",options:["Italie","Espagne","France","Allemagne"],a:2},{q:"Quel animal dit 'meuh' ?",options:["Chien","Vache","Chat","Mouton"],a:1},{q:"Combien de minutes dans une heure ?",options:["50","60","70","90"],a:1},{q:"Quel est l'élément chimique symbolisé 'O' ?",options:["Or","Oxygène","Osmium","Oganesson"],a:1},{q:"La monnaie du Japon s'appelle ?",options:["Yen","Dollar","Euro","Peso"],a:0},{q:"Quel continent est le plus peuplé ?",options:["Afrique","Asie","Europe","Océanie"],a:1},{q:"Quelle langue est parlée en Espagne principalement ?",options:["Français","Espagnol","Anglais","Portugais"],a:1}],  
+    Moyen:[{q:"Qui a peint la Joconde ?",options:["Picasso","Léonard de Vinci","Van Gogh","Monet"],a:1},{q:"Qui a écrit Les Misérables ?",options:["Victor Hugo","Zola","Balzac","Molière"],a:0},{q:"Quelle est la capitale du Canada ?",options:["Toronto","Ottawa","Vancouver","Montréal"],a:1},{q:"Combien de planètes dans le système solaire ?",options:["7","8","9","10"],a:1},{q:"Combien de côtés a un hexagone ?",options:["5","6","7","8"],a:1},{q:"La Révolution française débute en ?",options:["1776","1789","1804","1815"],a:1},{q:"Qui a proposé la relativité restreinte ?",options:["Newton","Einstein","Galilée","Tesla"],a:1},{q:"Combien de cordes sur une guitare classique ?",options:["4","5","6","7"],a:2},{q:"Quel fleuve traverse l'Égypte ?",options:["Nil","Amazone","Yangtsé","Danube"],a:0},{q:"Quelle est la monnaie de la Grande-Bretagne ?",options:["Euro","Livre","Dollar","Franc"],a:1}],  
+    Difficile:[{q:"Quel est l'organe le plus grand du corps humain ?",options:["Foie","Cerveau","Peau","Poumons"],a:2},{q:"Quelle est la capitale de l'Australie ?",options:["Sydney","Melbourne","Canberra","Perth"],a:2},{q:"Combien d'os dans le corps humain adulte ?",options:["196","206","216","226"],a:1},{q:"Symbole chimique pour le fer ?",options:["Fe","Fr","F","Fi"],a:0},{q:"Combien de paires de chromosomes chez l'humain ?",options:["22","23","24","25"],a:1},{q:"Qui a peint la chapelle Sixtine ?",options:["Raphaël","Michel-Ange","Donatello","Léonard"],a:1},{q:"Quelle est la plus grande île du monde ?",options:["Madagascar","Groenland","Borneo","Sumatra"],a:1},{q:"Qui a écrit 'Le Petit Prince' ?",options:["Saint-Exupéry","Camus","Hugo","Zola"],a:0},{q:"Quelle langue a le plus de locuteurs natifs ?",options:["Anglais","Mandarin","Espagnol","Hindi"],a:1},{q:"Qui a découvert l'Amérique (1492) ?",options:["Magellan","Colomb","Vasco de Gama","Cook"],a:1}],  
+    Expert:[{q:"En quelle année l'homme a-t-il marché sur la Lune ?",options:["1965","1969","1972","1975"],a:1},{q:"Quelle molécule transporte l'oxygène dans le sang ?",options:["Insuline","Hémoglobine","Adrénaline","Chlorophylle"],a:1},{q:"Qui a proposé la loi de la gravitation universelle ?",options:["Newton","Einstein","Galilée","Kepler"],a:0},{q:"Quel est le plus grand désert chaud ?",options:["Antarctique","Sahara","Gobi","Kalahari"],a:1},{q:"Qui a composé la 9e symphonie ?",options:["Bach","Mozart","Beethoven","Chopin"],a:2},{q:"Capitale de l'Islande ?",options:["Reykjavik","Oslo","Helsinki","Stockholm"],a:0},{q:"Quel est l'élément chimique le plus léger ?",options:["Hydrogène","Hélium","Oxygène","Azote"],a:0},{q:"Quel scientifique a découvert la pénicilline ?",options:["Pasteur","Fleming","Curie","Darwin"],a:1},{q:"Quelle est la vitesse approximative du son dans l'air (m/s) ?",options:["343","123","500","800"],a:0},{q:"Quel philosophe a écrit 'La République' ?",options:["Aristote","Socrate","Platon","Descartes"],a:2}],  
+    Maitre:[{q:"Qui a inventé l'imprimerie moderne ?",options:["Gutenberg","Newton","Galilée","Descartes"],a:0},{q:"Quelle est la plus haute montagne du monde ?",options:["K2","Everest","Kangchenjunga","Lhotse"],a:1},{q:"Quelle est la distance approximative Terre-Lune (km) ?",options:["384000","284000","184000","484000"],a:0},{q:"Quel prix Nobel Marie Curie a gagné ?",options:["Physique","Chimie","Médecine","Paix"],a:1},{q:"Qui a écrit 'Candide' ?",options:["Molière","Voltaire","Rousseau","Diderot"],a:1},{q:"Capitale du Brésil ?",options:["Rio","Brasilia","São Paulo","Salvador"],a:1},{q:"Combien de lunes Jupiter a (approx) ?",options:["79","62","27","14"],a:0},{q:"Quel explorateur a traversé l'Atlantique en 1492 ?",options:["Colomb","Magellan","Vasco","Cook"],a:0},{q:"Quel est le plus grand océan ?",options:["Atlantique","Pacifique","Indien","Arctique"],a:1},{q:"Qui composa la 'Flûte enchantée' ?",options:["Mozart","Beethoven","Haydn","Bach"],a:0}]  
+  },  
+  sport: {  
+    Facile:[{q:"Combien de joueurs sur le terrain par équipe au football ?",options:["9","10","11","12"],a:2},{q:"Combien de joueurs sur un terrain en basket ?",options:["4","5","6","7"],a:1},{q:"Quel athlète est célèbre pour le 100m ?",options:["Usain Bolt","Michael Phelps","Rafael Nadal","Roger Federer"],a:0},{q:"Quel sport se joue sur un court et une raquette ?",options:["Football","Tennis","Basket","Rugby"],a:1},{q:"Le Tour de France est une course de ?",options:["Cyclisme","Course à pied","Natation","Ski"],a:0},{q:"Combien de sets pour gagner en tennis (hommes) GS ?",options:["3","5","7","1"],a:1},{q:"Quel sport a des paniers ?",options:["Rugby","Basket","Football","Water-polo"],a:1},{q:"Quel sport pratique Serena Williams ?",options:["Football","Tennis","Rugby","Handball"],a:1},{q:"Un touchdown est dans :",options:["Football","Football américain","Basket","Rugby"],a:1},{q:"Combien de joueurs au volley-ball par équipe ?",options:["4","5","6","7"],a:2}],  
+    Moyen:[{q:"Quel pays a remporté la Coupe du Monde 2018 ?",options:["Brésil","France","Allemagne","Argentine"],a:1},{q:"Combien de minutes dure un match de foot standard ?",options:["70","80","90","100"],a:2},{q:"Combien de points pour un panier à 3 ?",options:["1","2","3","4"],a:2},{q:"Quelle compétition est en cyclisme ?",options:["Wimbledon","Tour de France","Open USA","Super Bowl"],a:1},{q:"Qui est considéré comme une légende du basket 'MJ' ?",options:["LeBron","Kobe","Jordan","Magic"],a:2},{q:"Quelle nation est grande en cricket ?",options:["Inde","France","Espagne","Belgique"],a:0},{q:"Combien de joueurs rugby à XV ?",options:["11","13","15","17"],a:2},{q:"Quel tournoi est sur gazon en tennis ?",options:["Roland Garros","Wimbledon","US Open","Australian Open"],a:1},{q:"Lequel est un Grand Chelem ?",options:["Wimbledon","Davis Cup","Euro","Copa"],a:0},{q:"Quel sport a un 'hat-trick' ?",options:["Tennis","Football","Basket","Golf"],a:1}],  
+    Difficile:[{q:"Quel est le record du monde du 100 m (homme) ?",options:["9.58s","9.63s","9.72s","9.84s"],a:0},{q:"Quel club a le plus de Ligues des Champions ?",options:["Real Madrid","Barça","Milan","Liverpool"],a:0},{q:"Qui a le plus de Ballons d'Or historically ?",options:["Messi","Ronaldo","Pele","Maradona"],a:0},{q:"Quel pays a remporté l'Euro 2016 ?",options:["France","Portugal","Germany","Spain"],a:1},{q:"Combien de points pour pénalité au rugby ?",options:["2","3","5","7"],a:1},{q:"Que mesure le VO2 max ?",options:["Force","Capacité aérobie","Souplesse","Équilibre"],a:1},{q:"Quel est le sport le plus populaire mondialement ?",options:["Basket","Football","Cricket","Tennis"],a:1},{q:"Quel tournoi de tennis se joue sur terre battue ?",options:["Wimbledon","Roland Garros","US Open","Australian Open"],a:1},{q:"Quel est le nombre max de remplacements en match ?",options:["3","5","7","10"],a:0},{q:"Qui est le meilleur marqueur historique en foot (approx.) ?",options:["Messi","Ronaldo","Pele","Romario"],a:1}],  
+    Expert:[{q:"Quel joueur a dominé NBA dans les années 90 ?",options:["Jordan","Magic","Bird","Kobe"],a:0},{q:"Qui a remporté la Ligue des Champions 2021 ?",options:["Chelsea","Manchester City","Real Madrid","Bayern"],a:0},{q:"Quel coureur a gagné plusieurs Tours de France ?",options:["Pantani","Froome","Contador","Bernal"],a:1},{q:"Quel est le record de points en un match NBA ?",options:["100","81","73","62"],a:1},{q:"Qu'est-ce qu'un 'pace line' aide en cyclisme ?",options:["Accélérer","Économiser énergie","Ralentir","Risque blessure"],a:1},{q:"Quel joueur est la légende du tennis Rafael ?",options:["Nadal","Federer","Djokovic","Murray"],a:0},{q:"Combien de joueurs sur le terrain hockey sur glace ?",options:["5","6","7","11"],a:1},{q:"Qui est recordman de médailles olympiques ?",options:["Phelps","Bolt","Larisa","Usain"],a:0},{q:"Quel est le terme de 'triathlon' ?",options:["Natation+vélo+course","Vélo+football","Tennis+golf","Boxe+karate"],a:0},{q:"Quelle est la durée d'un match de boxe professionnel (rounds) ?",options:["3","12","15","9"],a:1}],  
+    Maitre:[{q:"Quel coach est connu pour le 'tiki-taka' ?",options:["Guardiola","Mourinho","Ancelotti","Klopp"],a:0},{q:"Quel est le record du monde du 400m (homme) approximatif ?",options:["43s","44s","45s","46s"],a:0},{q:"Qu'est-ce que l'interval training ?",options:["Entraînement par intervalles","Repos total","Étirement long","Compétition"],a:0},{q:"Quelle technologie aide l'analyse sportive ?",options:["GPS trackers","Paper maps","Candles","None"],a:0},{q:"Quel est l'impact principal du dopage ?",options:["Amélioration performances","Risque santé","Augmentation salaire","Rien"],a:1},{q:"Quel score donne un touchdown + extra point ?",options:["6","7","8","3"],a:1},{q:"Que mesure une balance de puissance en cyclisme ?",options:["Vitesse","Puissance en watts","Calories","Temps"],a:1},{q:"Quel joueur a dominé l'ère Messi/Barça ?",options:["Messi","Maradona","Batistuta","Tevez"],a:0},{q:"Quel type d'entraînement développe la puissance ?",options:["Pliométrie","Endurance lente","Yoga","Marche"],a:0},{q:"Quel paramètre est clef pour performance aérobie ?",options:["VO2 max","Taille","Poids","Couleur yeux"],a:0}]  
+  },  
+  sante: {  
+    Facile:[{q:"Quelle vitamine principale est synthétisée par le soleil ?",options:["Vitamine A","Vitamine D","Vitamine C","Vitamine B"],a:1},{q:"Se laver les mains évite ?",options:["Infections","Riche","Gagner la loterie","Chanter mieux"],a:0},{q:"Boire de l'eau sert à ?",options:["Hydrater","Maigrir automatiquement","S'habiller","Rire"],a:0},{q:"Le sucre est principalement ...",options:["Un carburant","Un médicament","Une protéine","Un minéral"],a:0},{q:"Les vaccins servent à ...",options:["Traiter","Prévenir","Accélérer maladie","Ralentir"],a:1},{q:"Combien d'heures de sommeil recommandations adultes ?",options:["4-5","5-6","7-9","10+"],a:2},{q:"Hygiène buccale évite ...",options:["Carie","Asthme","Myopie","Diabète"],a:0},{q:"La fièvre est au-dessus de ?",options:["36°C","37°C","38°C","39°C"],a:2},{q:"Un symptôme de déshydratation ?",options:["Bouche sèche","Rire","Soif extrême","Pleine énergie"],a:0},{q:"Quelle habitude protège la santé ?",options:["Manger équilibré","Fumer","Boire essence","Dormir 2h"],a:0}],  
+    Moyen:[{q:"Paludisme transmis par ?",options:["Mouche","Moustique Anophèle","TiKe","Puces"],a:1},{q:"La tension 'normale' approx ?",options:["12/8","20/10","14/11","10/7"],a:0},{q:"Quel aliment riche en fer ?",options:["Lentilles","Sucre","Sel","Beurre"],a:0},{q:"La tuberculose attaque surtout ?",options:["Poumons","Peau","Yeux","Oreilles"],a:0},{q:"Brossage des dents idéal ?",options:["1x/j","2x/j","0x/j","5x/j"],a:1},{q:"HIV affecte ?",options:["Système digestif","Système immunitaire","Système nerveux","Peau"],a:1},{q:"Premier geste étouffement ?",options:["Taper dans le dos","Donner eau","Ignorer","Crier"],a:0},{q:"Test pour sucre sanguin ?",options:["ECG","Glycémie","IRM","Radio"],a:1},{q:"Prévention primaire = ?",options:["Soigner","Prévenir","Réparer","Ignorer"],a:1},{q:"La vaccination protège surtout ?",options:["Individus","Populations","Objets","Véhicules"],a:1}],  
+    Difficile:[{q:"Diabète type 2 lié à ?",options:["Génétique","Mode de vie","Virus","Blessure"],a:1},{q:"Examen : mammographie sert pour ?",options:["Cancer du sein","Diabète","Hypertension","Covid"],a:0},{q:"Un AVC affecte ?",options:["Coeur","Cerveau","Poumons","Yeux"],a:1},{q:"Glycémie mesure ?",options:["Sucre sanguin","Tension","Temperature","Cholestérol"],a:0},{q:"Cholestérol mesuré par ?",options:["Glycémie","Bilan lipidique","ECG","Scanner"],a:1},{q:"Prévention secondaire vise à ?",options:["Prévenir","Détecter tôt","Réparer","Négocier"],a:1},{q:"Quel organe détoxifie majoritairement ?",options:["Rein","Foie","Coeur","Poumon"],a:1},{q:"Quel nutriment aide la récupération musculaire ?",options:["Protéines","Sel","Sucre","Café"],a:0},{q:"Antibiotiques ciblent ?",options:["Bactéries","Virus","Champignons","Parapluies"],a:0},{q:"PCR détecte ?",options:["ADN/ARN pathogène","Anticorps","Cholestérol","Tension"],a:0}],  
+    Expert:[{q:"Étude la plus fiable pour causalité ?",options:["Observation","Essai randomisé","Étude transversale","Sondage"],a:1},{q:"Biomarqueur infarctus ?",options:["Troponine","Glucose","Cholestérol","Sodium"],a:0},{q:"Résistance aux antibiotiques causée par ?",options:["Surutilisation","Exercice","Bonne alimentation","Repose"],a:0},{q:"Vaccination de rappel renforce ?",options:["Immunité","Sommeil","Taille","Couleur yeux"],a:0},{q:"AVC ischémique = ?",options:["Hémorragie","Obstruction vasculaire","Infection","Blessure"],a:1},{q:"Quel test pour covid ?",options:["PCR","ECG","Mammographie","Scanner abdo"],a:0},{q:"Prévention tertiaire vise à ?",options:["Prévenir","Réduire complications","Soigner immédiatement","Ignorer"],a:1},{q:"Nutrition entérale = ?",options:["Bouche","Sonde","Injection","Massage"],a:1},{q:"Effet secondaire fréquent antibiotiques ?",options:["Diarrhée","Perte de vue","Paralysie","Perte mémoire"],a:0},{q:"Quel organe a fonction endocrine & exocrine ?",options:["Coeur","Pancréas","Poumon","Vessie"],a:1}],  
+    Maitre:[{q:"Quel type d'étude est 'randomisé contrôlé' ?",options:["Observational","Interventional","Survey","Case report"],a:1},{q:"Quel biomarqueur important en cardiologie ?",options:["Troponine","Albumine","CRP","Glucose"],a:0},{q:"La prévention primaire veut ?",options:["Détecter tardivement","Prévenir","Réparer","Répondre"],a:1},{q:"Quel est l'objectif de la santé publique ?",options:["Soigner individuellement","Améliorer la santé population","Réduire taxes","Promouvoir luxe"],a:1},{q:"Quel test détecte ARN viral ?",options:["PCR","Anticorps test","ECG","Radiographie"],a:0},{q:"Quel est le but d'une campagne vaccinale ?",options:["Immunité collective","Profit uniquement","Ignorer","Augmenter consommation"],a:0},{q:"Quel indicateur suit la nutrition ?",options:["Albumine","Couleur des yeux","Taille des oreilles","Poids uniquement"],a:0},{q:"Quel rôle du rein ?",options:["Filtrer sang","Pomper sang","Produire bile","Stocker air"],a:0},{q:"Quel est la prévention tertiaire ?",options:["Réduire séquelles","Prévenir","Soigner initial","Promouvoir"],a:0},{q:"Importance de l'hygiène des mains ?",options:["Prévenir infections","Améliorer performance","Permettre vol","Aucune"],a:0}]  
+  },  
+  histoire: {  
+    Facile:[{q:"Qui était Nelson Mandela ?",options:["Un leader anti-apartheid","Un roi d'Égypte","Un peintre","Un scientifique"],a:0},{q:"Quel empire ouest africain pour son or ?",options:["Mali","Songhaï","Kongo","Bénin"],a:0},{q:"Capitale historique du Mali médiéval ?",options:["Tombouctou","Accra","Kano","Lagos"],a:0},{q:"Qui est Kwame Nkrumah ?",options:["Leader ghanéen","Empereur","Explorateur","Musicien"],a:0},{q:"La conférence de Berlin a eu lieu en ?",options:["1884","1914","1939","1960"],a:0},{q:"Patrice Lumumba était premier ministre de ?",options:["Congo","Sénégal","Ghana","Mali"],a:0},{q:"Soundiata Keïta fondateur de ?",options:["Mali","Ghana","Songhaï","Kongo"],a:0},{q:"Ruben Um Nyobè héros de ?",options:["Cameroun","Sénégal","Nigéria","Congo"],a:0},{q:"Qui est Léopold S. Senghor ?",options:["Président et poète du Sénégal","Empereur","Roi","Explorateur"],a:0},{q:"Quel empire contrôlait le commerce transsaharien ?",options:["Mali","Songhaï","Ghana","Aksoum"],a:0}],  
+    Moyen:[{q:"Quand les indépendances africaines ?",options:["1940s","1950s-60s","1970s","1980s"],a:1},{q:"Qui est Thomas Sankara ?",options:["Leader révolutionnaire burkinabè","Président camerounais","Poète","Explorateur"],a:0},{q:"Quel mouvement lutte contre apartheid ?",options:["ANC","FLN","SWAPO","ZANU"],a:0},{q:"Quel colonisateur administra le Congo belge ?",options:["Belgique","France","Portugal","UK"],a:0},{q:"Quel pays n'a pas été colonisé longtemps ?",options:["Ethiopie","Algérie","Cameroun","Benin"],a:0},{q:"Quel roi zoulou célèbre ?",options:["Shaka","Cetshwayo","Dingane","Mpande"],a:0},{q:"Mansa Musa était roi de ?",options:["Mali","Ghana","Songhaï","Kongo"],a:0},{q:"La ville historique Tombouctou est en ?",options:["Mali","Niger","Chad","Ghana"],a:0},{q:"La colonisation moderne a débuté au ?",options:["XIXe siècle","XVIIIe siècle","XVe siècle","XXe siècle"],a:0},{q:"Qui est Ibn Battuta ?",options:["Voyageur et érudit","Roi","Explorateur portugais","Colonisateur"],a:0}],  
+    Difficile:[{q:"Quel traité partagea l'Afrique ?",options:["Acte de Berlin","Traité de Paris","Traité de Rome","Traité de Lisbonne"],a:0},{q:"Quel leader africain était poète et président ?",options:["Senghor","Nkrumah","Lumumba","Sankara"],a:0},{q:"Où était l'empire Kanem-Bornou ?",options:["Afrique centrale","Afrique de l'Ouest","Afrique australe","Afrique du Nord"],a:0},{q:"Qui résista victorieusement à l'Italie (1896) ?",options:["Éthiopie","Sénégal","Algérie","Libye"],a:0},{q:"Grand centre universitaire en Afrique de l'Ouest ?",options:["Tombouctou","Carthage","Le Caire","Fès"],a:0},{q:"Figure du panafricanisme ?",options:["Marcus Garvey","Aimé Césaire","Frantz Fanon","Tous"],a:3},{q:"Mouvement d'indépendance algérienne ?",options:["FLN","MNA","ANC","MPLA"],a:0},{q:"Quel leader dirigea le Ghana après indépendance ?",options:["Kwame Nkrumah","Jomo Kenyatta","Nkrumah","Lumumba"],a:0},{q:"Quel pays a Mansa Musa ?",options:["Mali","Niger","Mali","Mali"],a:0},{q:"Qu'a provoqué la conférence de Berlin ?",options:["Partage coloniale","Unité africaine","Fin esclavage","Industrialisation"],a:0}],  
+    Expert:[{q:"Qui est Cheikh Anta Diop ?",options:["Historien sénégalais","Explorateur","Empereur","Écrivain européen"],a:0},{q:"Quel philosophe influença panafricanisme ?",options:["Diop","Senghor","Nkrumah","Tous"],a:3},{q:"Quel mouvement promut l'unité africaine ?",options:["Pan-Africanisme","Colonialisme","Apartheid","Nihilisme"],a:0},{q:"Objectif de l'OUA devenu AU ?",options:["Unité africaine","Commerce uniquement","Sport","Religion"],a:0},{q:"Qui fut président et poète du Sénégal ?",options:["Senghor","Diop","Nkrumah","Lumumba"],a:0},{q:"Souverain malien fit pèlerinage ?",options:["Mansa Musa","Soundiata","Askia","Sunni Ali"],a:0},{q:"Ville centre de savoir islamique ?",options:["Tombouctou","Marrakech","Tripoli","Cairo"],a:0},{q:"Mouvement anti-colonial au Cameroun ?",options:["UPC","ANC","FLN","MPLA"],a:0},{q:"Quel leader utilisait la radio ?",options:["Nkrumah","Senghor","Lumumba","Nyerere"],a:0},{q:"Bibliothèque de Tombouctou est en ?",options:["Mali","Senegal","Niger","Algeria"],a:0}],  
+    Maitre:[{q:"Qui fut roi du Dahomey ?",options:["Béhanzin","Ghana","Kongo","Songhaï"],a:0},{q:"Quel intellectuel promut l'histoire africaine ?",options:["Cheikh Anta Diop","Aimé Césaire","Ngugi","Achebe"],a:0},{q:"Quel traité imposa frontières coloniales ?",options:["Acte de Berlin","Traité de Versaille","Yalta","None"],a:0},{q:"Qui exerça politique anti-impérialiste au Ghana ?",options:["Nkrumah","Senghor","Lumumba","Sankara"],a:0},{q:"Quel royaume contrôlait commerce transsaharien ?",options:["Mali","Songhaï","Ghana","Kongo"],a:0},{q:"Quel leader fut assassiné en 1961 ?",options:["Lumumba","Nkrumah","Senghor","Sankara"],a:0},{q:"Héritage culturel de Tombouctou ?",options:["Manuscrits","Métallurgie","Industrie spatiale","Peinture"],a:0},{q:"Quelle ancienne civilisation d'Afrique ?",options:["Égypte","Éthiopie","Mali","Côte d'Ivoire"],a:0},{q:"Quel empire connu pour architecture & commerce ?",options:["Mali","Songhaï","Ghana","Aksoum"],a:0},{q:"Qui est 'père' du panafricanisme moderne ?",options:["Marcus Garvey","W.E.B. Du Bois","Tous","Nkrumah"],a:2}]  
+  },  
+  tech: {  
+    Facile:[{q:"HTML sert à ?",options:["Styler pages","Structurer pages","Stocker données","Programmer serveurs"],a:1},{q:"Que signifie CPU ?",options:["CPU","GPU","RAM","SSD"],a:0},{q:"Format d'image compressé populaire ?",options:["PNG","JPEG","RAW","TIFF"],a:1},{q:"Protocole web ?",options:["FTP","HTTP","SMTP","SSH"],a:1},{q:"CSS sert à ?",options:["Structure","Style","Base de données","Hardware"],a:1},{q:"JS s'exécute où ?",options:["Serveur","Navigateur","Imprimante","Routeur"],a:1},{q:"Un 'bug' est ?",options:["Erreur","Feature","Hardware","Réseau"],a:0},{q:"SSD est ?",options:["RAM","Stockage","CPU","GPU"],a:1},{q:"Composant qui affiche ?",options:["CPU","GPU","RAM","ROM"],a:1},{q:"HTML signifie ?",options:["HyperText Markup Language","HighText","Hyperlink","HomeText"],a:0}],  
+    Moyen:[{q:"Rôle d'une API ?",options:["Interface de données","Stockage","OS","Antivirus"],a:0},{q:"Open-source signifie ?",options:["Code public","Payant","Secret","Privé"],a:0},{q:"Langage back populaire ?",options:["Python","HTML","CSS","SVG"],a:0},{q:"Cloud = ?",options:["Stockage en ligne","Ordinateur","Clown","Bande"],a:0},{q:"Format structuré ?",options:["JSON","TXT","MP3","PNG"],a:0},{q:"Framework JS ?",options:["React","Photoshop","Excel","Word"],a:0},{q:"UX signifie ?",options:["User Experience","Ultimate X","User X","Unit X"],a:0},{q:"VCS populaire ?",options:["Git","FTP","HTTP","SMTP"],a:0},{q:"SSL sert à ?",options:["Sécuriser connexion","Accélérer CPU","Augmenter mémoire","Compresser"],a:0},{q:"Cookie = ?",options:["Fichier données","Gâteau","Virus","Hardware"],a:0}],  
+    Difficile:[{q:"Chiffrement asymétrique ?",options:["RSA","AES","MD5","SHA1"],a:0},{q:"Latence = ?",options:["Retard réseau","Vitesse CPU","Taille HDD","Version"],a:0},{q:"Rôle DNS ?",options:["Résoudre domaines","Stocker","Envoyer mail","Imprimer"],a:0},{q:"Containerization (Docker) ?",options:["Isoler apps","Accélérer internet","Hardware","Antivirus"],a:0},{q:"Microservices caract ?",options:["Découplage","Monolithe","Statique","Immuable"],a:0},{q:"CI/CD signifie ?",options:["Intégration/Déploiement","Code/Deploy","Client/Server","Crypto/Dev"],a:0},{q:"Couches réseau (simplifié) ?",options:["App,Trans,Net,Link","Trans,App,Link,Net","Link,App,Net,Trans","Net,Link,App,Trans"],a:0},{q:"Donnée utile ML ?",options:["Dataset","Clavier","Écran","Imprimante"],a:0},{q:"GPU sert pour ?",options:["Graphisme/Calculs","Stockage","Réseau","Son"],a:0},{q:"Protocole web sécurisé ?",options:["HTTP","HTTPS","FTP","SMTP"],a:1}],  
+    Expert:[{q:"Edge computing = ?",options:["Traitement proche source","Cloud centralisé","Impression 3D","Stockage local"],a:0},{q:"Modèle ML pour images ?",options:["CNN","RNN","SVM","KNN"],a:0},{q:"OAuth est ?",options:["Auth protocol","Langage","DB","Serveur"],a:0},{q:"Sharding en BD ?",options:["Diviser données","Fusionner BD","Sauvegarde","Compression"],a:0},{q:"Observability = ?",options:["Tracer systèmes","Ignorer logs","Sauvegarder","Compresser"],a:0},{q:"Format binaire populaire ?",options:["Protobuf","CSV","TXT","HTML"],a:0},{q:"Métrique ML ?",options:["Accuracy","Taille écran","Poids GPU","Nombre cores"],a:0},{q:"Serverless signifie ?",options:["Pas de serveur à gérer","Aucun serveur","Serveur privé","Serveur local"],a:0},{q:"DevOps promeut ?",options:["Collab Dev & Ops","Séparation Dev/Ops","Ignorer tests","Release tardive"],a:0},{q:"Principe sécurité clé ?",options:["Least privilege","Open access","Password reuse","No updates"],a:0}],  
+    Maitre:[{q:"Entraînement distribué ML ?",options:["Répartir training","Un seul GPU","Stockage cloud","Compresser"],a:0},{q:"Federated learning ?",options:["Apprentissage sans centraliser","Apprendre local","Compiler code","Sauvegarder logs"],a:0},{q:"Technique réduit overfitting ?",options:["Dropout","Ignorer test","Augmenter LR","Supprimer data"],a:0},{q:"Orchestrateur conteneurs ?",options:["Kubernetes","Dockerfile","Git","Nginx"],a:0},{q:"Homomorphic encryption ?",options:["Chiffrement opérable","Compression","Format image","Protocole"],a:0},{q:"Zero trust model ?",options:["Toujours vérifier","Faire confiance","Pas de sécurité","Obsolète"],a:0},{q:"Algorithme optimisation NN ?",options:["Adam","SGD","RMSProp","Tous"],a:3},{q:"Inference quantique ?",options:["Utiliser qubits","Algo classique","GPU","Stockage"],a:0},{q:"Protocole messagerie sécurisé ?",options:["TLS","UDP","ICMP","FTP"],a:0},{q:"Scalabilité horizontale ?",options:["Ajouter nœuds","Ajouter CPU unique","Monolithe","Réduire mémoire"],a:0}]  
+  }  
+};  
+  
+/* =========================  
+   UI REFS & NAV  
+   ========================= */  
+const sideMenu = document.getElementById('sideMenu');  
+const btnMenu = document.getElementById('btnMenu');  
+const btnBack = document.getElementById('btnBack');  
+const btnSettings = document.getElementById('btnSettings');  
+const userLabel = document.getElementById('userLabel');  
+const gainsLabel = document.getElementById('gainsLabel');  
+const pages = {  
+  ad: document.getElementById('page-ad'),  
+  login: document.getElementById('page-login'),  
+  categories: document.getElementById('page-categories'),  
+  levels: document.getElementById('page-levels'),  
+  quiz: document.getElementById('page-quiz'),  
+  result: document.getElementById('page-result'),  
+  settings: document.getElementById('page-settings'),  
+  withdraw: document.getElementById('page-withdraw')  
+};  
+let historyStack = [];  
+  
+function showPage(pid, push=true){  
+  Object.values(pages).forEach(p=>p.classList.remove('active'));  
+  pages[pid].classList.add('active');  
+  if(push) historyStack.push(pid);  
+  btnBack.style.display = (historyStack.length>1) ? 'flex' : 'none';  
+  userLabel.textContent = state.user;  
+  gainsLabel.textContent = state.virtualGains;  
+}  
+  
+/* =========================  
+   BIND EVENTS  
+   ========================= */  
+document.addEventListener('DOMContentLoaded', ()=>{  
+  btnMenu.addEventListener('click', ()=> sideMenu.classList.toggle('open'));  
+  btnBack.addEventListener('click', ()=> {  
+    historyStack.pop();  
+    const prev = historyStack.pop() || 'ad';  
+    showPage(prev);  
+    if(sideMenu.classList.contains('open')) sideMenu.classList.remove('open');  
+  });  
+  btnSettings.addEventListener('click', ()=> { sideMenu.classList.remove('open'); showPage('settings'); });  
+  
+  document.getElementById('mHome').addEventListener('click', ()=>{ showPage('ad'); sideMenu.classList.remove('open'); });  
+  document.getElementById('mCategories').addEventListener('click', ()=>{ showPage('categories'); sideMenu.classList.remove('open'); });  
+  document.getElementById('mSettings').addEventListener('click', ()=>{ showPage('settings'); sideMenu.classList.remove('open'); });  
+  document.getElementById('mWithdraw').addEventListener('click', ()=>{ showPage('withdraw'); sideMenu.classList.remove('open'); });  
+  document.getElementById('mReset').addEventListener('click', ()=>{ if(confirm('Réinitialiser progression et gains ?')){ state.progress={}; ensureProgress(); state.virtualGains=0; saveGains(); saveProgress(); renderLevels(); updateGainsUI(); alert('Réinitialisé'); } });  
+  
+  document.getElementById('startBtn').addEventListener('click', ()=> showPage('login'));  
+  document.getElementById('howBtn').addEventListener('click', ()=> alert('5 catégories × 5 niveaux × 10 questions. 30s par question. Débloque niveau suivant ≥ 9/10.'));  
+  
+  document.getElementById('btnAccess').addEventListener('click', handleAccess);  
+  document.getElementById('btnGuest').addEventListener('click', ()=> { state.user='Invité'; saveUser(); renderLevels(); showPage('categories'); });  
+  
+  document.querySelectorAll('.cat').forEach(el=> el.addEventListener('click', ()=> {  
+    const cat = el.dataset.cat;  
+    state.currentCategory = cat;  
+    renderLevels();  
+    showPage('levels');  
+  }));  
+  
+  document.getElementById('btnSkip').addEventListener('click', ()=> skipQuestion());  
+  document.getElementById('btnNext').addEventListener('click', ()=> nextQuestion());  
+  document.getElementById('btnQuit').addEventListener('click', ()=> { if(confirm('Quitter la partie ?')){ clearTimer(); showPage('levels'); } });  
+  
+  document.getElementById('btnReplay').addEventListener('click', ()=> startLevel(state.currentLevelIndex));  
+  document.getElementById('btnChooseLevel').addEventListener('click', ()=> showPage('levels'));  
+  document.getElementById('btnNextLevel').addEventListener('click', ()=> {  
+    const next = state.currentLevelIndex+1;  
+    if(next < LEVELS.length && state.progress[state.currentCategory][next]) startLevel(next);  
+  });  
+  
+  document.getElementById('toggleSound').addEventListener('click', ()=> { state.sound = !state.sound; saveAudioPref(); updateSoundUI(); alert('Son: ' + (state.sound ? 'Activé' : 'Désactivé')); });  
+  document.getElementById('themeSelect').addEventListener('change', (e)=> { if(e.target.value==='dark') document.documentElement.style.background = 'linear-gradient(180deg,#0f172a,#0b1020)'; else document.documentElement.style.background = 'linear-gradient(180deg,var(--bg-1),var(--bg-2))'; });  
+  
+  document.getElementById('requestWithdraw').addEventListener('click', ()=> {  
+    const allDone = Object.keys(state.progress).every(cat => state.progress[cat].every(Boolean));  
+    if(allDone) alert('Demande de retrait envoyée (simulation).');  
+    else alert('Terminez tous les niveaux de toutes les catégories pour débloquer le retrait.');  
+  });  
+  
+  renderLevels();  
+  updateGainsUI();  
+  updateSoundUI();  
+  historyStack = ['ad'];  
+  showPage('ad', false);  
+});  
+  
+/* =========================  
+   AUTH  
+   ========================= */  
+function handleAccess(){  
+  const em = document.getElementById('emailInput').value.trim();  
+  const p1 = document.getElementById('pwdInput').value;  
+  const p2 = document.getElementById('pwdInput2').value;  
+  if(!em || !p1 || !p2){ alert('Remplis tous les champs'); return; }  
+  if(p1 !== p2){ alert('Mots de passe différents'); return; }  
+  state.user = em.split('@')[0] || em;  
+  state.email = em;  
+  saveUser();  
+  renderLevels();  
+  showPage('categories');  
+}  
+  
+/* =========================  
+   RENDER LEVELS  
+   ========================= */  
+function renderLevels(){  
+  ensureProgress();  
+  const cat = state.currentCategory || 'culture';  
+  document.getElementById('levels-title').innerText = capitalize(cat);  
+  const arr = state.progress[cat] || [];  
+  document.getElementById('unlockedCount').textContent = arr.filter(x=>x).length;  
+  const list = document.getElementById('levelsList'); list.innerHTML = '';  
+  LEVELS.forEach((lvl,i)=>{  
+    const div = document.createElement('div'); div.className = 'level' + (arr[i] ? '' : ' locked');  
+    div.innerHTML = `<div style="font-size:28px">${['🌱','🚀','🔥','🧭','👑'][i]}</div><div style="font-weight:800">${lvl}</div><div style="font-size:12px;color:var(--muted)">${arr[i] ? 'Débloqué' : 'Verrouillé'}</div>`;  
+    if(arr[i]) div.addEventListener('click', ()=> startLevel(i));  
+    else div.addEventListener('click', ()=> alert('Niveau verrouillé — atteins 9/10 dans le précédent.'));  
+    list.appendChild(div);  
+  });  
+}  
+  
+/* =========================  
+   QUIZ FLOW  
+   ========================= */  
+function startLevel(levelIndex){  
+  state.currentLevelIndex = levelIndex;  
+  state.idx = 0; state.score = 0;  
+  const cat = state.currentCategory;  
+  const levelName = LEVELS[levelIndex];  
+  const pool = (DB[cat] && DB[cat][levelName]) ? DB[cat][levelName].slice() : [];  
+  state.quiz = shuffle(pool).slice(0, QUESTIONS_PER_LEVEL);  
+  document.getElementById('metaCat').textContent = capitalize(cat);  
+  document.getElementById('metaLvl').textContent = levelName;  
+  document.getElementById('metaScore').textContent = state.score;  
+  document.getElementById('progressBar').style.width = '0%';  
+  resetTimer();  
+  showPage('quiz');  
+  renderQuestion();  
+}  
+  
+function renderQuestion(){  
+  clearTimer();  
+  const q = state.quiz[state.idx];  
+  if(!q){ finishQuiz(); return; }  
+  document.getElementById('questionText').textContent = `Q${state.idx+1} / ${state.quiz.length} — ${q.q}`;  
+  const opts = q.options.map((o,i)=>({o,i})).sort(()=>Math.random()-0.5);  
+  const optsArea = document.getElementById('optionsArea'); optsArea.innerHTML = '';  
+  opts.forEach(item=>{  
+    const b = document.createElement('button'); b.className = 'option'; b.textContent = item.o;  
+    b.onclick = ()=> selectOption(b, item.i, q.a);  
+    optsArea.appendChild(b);  
+  });  
+  document.getElementById('metaScore').textContent = state.score;  
+  updateProgress();  
+  resetTimer();  
+  startTimer();  
+  document.getElementById('btnNext').style.display = 'none';  
+}  
+  
+/* selection */  
+function selectOption(elem, chosenIdx, correctIdx){  
+  [...document.getElementById('optionsArea').children].forEach(c=>c.style.pointerEvents='none');  
+  clearTimer();  
+  if(chosenIdx === correctIdx){  
+    elem.classList.add('correct');  
+    state.score++;  
+    playSound('success');  
+  } else {  
+    elem.classList.add('wrong');  
+    playSound('fail');  
+    // reveal correct  
+    [...document.getElementById('optionsArea').children].forEach(c=>{  
+      if(c.textContent === state.quiz[state.idx].options[correctIdx]) c.classList.add('correct');  
+    });  
+  }  
+  document.getElementById('metaScore').textContent = state.score;  
+  document.getElementById('btnNext').style.display = 'inline-block';  
+}  
+  
+/* skip (always available) */  
+function skipQuestion(){  
+  playSound('click');  
+  clearTimer();  
+  // skip without revealing and without scoring  
+  state.idx++;  
+  if(state.idx < state.quiz.length) renderQuestion();  
+  else finishQuiz();  
+}  
+  
+/* next */  
+function nextQuestion(){  
+  playSound('click');  
+  // proceed to next question (user already saw result)  
+  state.idx++;  
+  if(state.idx < state.quiz.length) renderQuestion();  
+  else finishQuiz();  
+}  
+  
+/* reveal correct used if needed */  
+function revealCorrect(){  
+  clearTimer();  
+  const correctIdx = state.quiz[state.idx].a;  
+  [...document.getElementById('optionsArea').children].forEach(c=>{  
+    if(c.textContent === state.quiz[state.idx].options[correctIdx]) c.classList.add('correct');  
+    c.style.pointerEvents='none';  
+  });  
+}  
+  
+/* finish */  
+function finishQuiz(){  
+  clearTimer();  
+  document.getElementById('resultScore').textContent = `${state.score} / ${state.quiz.length}`;  
+  const cat = state.currentCategory;  
+  const idx = state.currentLevelIndex;  
+  const cutoff = 9;  
+  if(state.score >= cutoff){  
+    document.getElementById('resultMsg').textContent = `Bravo ${state.user} — ${state.score} corrects. Niveau suivant débloqué !`;  
+    const next = idx+1;  
+    if(next < LEVELS.length && !state.progress[cat][next]) state.progress[cat][next] = true;  
+    // add virtual gain only once per level  
+    const key = `finished_${cat}_${idx}`;  
+    if(!localStorage.getItem(key)){ state.virtualGains += 1; localStorage.setItem(key,'1'); saveGains(); }  
+    saveProgress();  
+    document.getElementById('btnNextLevel').style.display = (idx+1 < LEVELS.length && state.progress[cat][idx+1]) ? 'inline-block' : 'none';  
+  } else {  
+    document.getElementById('resultMsg').textContent = `Tu as ${state.score}. Recommence pour obtenir 9/10 et débloquer le suivant.`;  
+    document.getElementById('btnNextLevel').style.display = 'none';  
+  }  
+  updateGainsUI();  
+  showPage('result');  
+}  
+  
+/* =========================  
+   TIMER (30s) with red badge & pulse if <10s  
+   ========================= */  
+function resetTimer(){ state.timeLeft = 30; updateTimerUI(); }  
+function startTimer(){  
+  clearTimer();  
+  updateTimerUI();  
+  state.timer = setInterval(()=>{  
+    state.timeLeft--;  
+    updateTimerUI();  
+    if(state.timeLeft <= 0){  
+      clearTimer();  
+      // auto reveal correct but do not score  
+      revealCorrect();  
+      document.getElementById('btnNext').style.display = 'inline-block';  
+    }  
+  },1000);  
+}  
+function clearTimer(){ if(state.timer){ clearInterval(state.timer); state.timer = null; } }  
+function updateTimerUI(){  
+  const el = document.getElementById('timerBadge');  
+  el.textContent = state.timeLeft + 's';  
+  el.style.color = '#b91c1c'; // red  
+  if(state.timeLeft <= 10) el.classList.add('timer-pulse'); else el.classList.remove('timer-pulse');  
+}  
+  
+/* =========================  
+   UTILITIES  
+   ========================= */  
+function shuffle(a){ return a.slice().sort(()=>Math.random()-0.5); }  
+function capitalize(s){ if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }  
+function updateProgress(){ const pct = Math.round((state.idx / state.quiz.length) * 100); document.getElementById('progressBar').style.width = pct + '%'; }  
+function saveProgress(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.progress)); }  
+function saveGains(){ localStorage.setItem(STORAGE_GAINS, String(state.virtualGains)); }  
+function updateGainsUI(){ document.getElementById('virtGains').textContent = state.virtualGains; document.getElementById('gainsLabel').textContent = state.virtualGains; }  
+function playSound(type){ if(!state.sound) return; try{ if(type==='click') document.getElementById('soundClick').play(); if(type==='success') document.getElementById('soundSuccess').play(); if(type==='fail') document.getElementById('soundFail').play(); }catch(e){} }  
+function updateSoundUI(){ document.getElementById('toggleSound').textContent = state.sound ? 'Désactiver sons' : 'Activer sons'; saveAudioPref(); }  
+  
+/* =========================  
+   Keyboard helpers (testing)  
+   ========================= */  
+document.addEventListener('keydown',(e)=>{  
+  if(document.getElementById('page-quiz').classList.contains('active')){  
+    if(e.key>='1' && e.key<='4'){ const idx = parseInt(e.key,10)-1; const opt = document.getElementById('optionsArea').children[idx]; if(opt) opt.click(); }  
+    else if(e.key === 'n') document.getElementById('btnNext').click();  
+    else if(e.key === 'p') skipQuestion();  
+  }  
+});  
+  
+/* =========================  
+   boot  
+   ========================= */  
+(function boot(){  
+  userLabel.textContent = state.user;  
+  updateGainsUI();  
+  updateSoundUI();  
+  renderLevels();  
+  historyStack = ['ad'];  
+  showPage('ad', false);  
+})();  
+</script>  </body>  
+</html>
