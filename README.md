@@ -1,2 +1,1 @@
 # EducQuiz
-Bouster la connaissance 
